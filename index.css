@@ -1,0 +1,50 @@
+@media screen and (min-width:1200px){
+	#descrip{
+		width:50%;
+	}
+	#login{
+		width:50%;
+	}
+}
+
+.page-row{
+	display:flex;
+	justify-content: center;
+	padding-top: 50px;
+	padding-left: 15px;
+}
+
+/*.a{
+	padding-top: 20px;
+}*/
+
+
+
+.sign-in-title{
+	padding-top: 20px;
+	text-align: center;
+}
+.login-row{
+	padding-top: 10px;
+}
+
+.panel-login{
+	margin-top: 20px;
+	margin-bottom:50px;
+	margin-left: 50px;
+	height: 250px;
+	background-color: #404040;
+	width: 100%;
+}
+
+#descrip {
+	margin-bottom: 30px;
+}
+
+ul{
+	margin-top: 145px;
+}
+
+li{
+	margin-top: 15px;
+}

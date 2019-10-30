@@ -1,0 +1,74 @@
+@media screen and (min-width:377px){
+        .left{
+          float:left;
+          height: 100%;
+          width:22%;
+          padding-left: 20px;
+          padding-top: 20px;
+          background-color: #282828;
+      
+        }
+        .right{
+          float:right;
+          width: 78%;
+          height: 100%;
+          background-color: #404040;
+        }
+      
+        .searchbar {
+          padding-top: 20px;
+          padding-left: 550px;
+          width:100%;
+        }
+        .main-right{
+          padding-top: 12px;
+          /*padding-left: 20px;*/
+        }
+        .select-course{
+          padding-left: 10px;
+          padding-top: 21px;
+          width:13%;
+          height: 100%;
+          text-align: center;
+          color: #E8E8E8;
+        }
+        td{
+        padding:25px;
+        }
+        table th, td {
+          /*width: 170px;*/
+          width:20%;
+          height:30px;
+          text-align: center;
+          border: 1px solid black;
+          background-color: #E8E8E8;
+    
+      }
+      table#schedule{
+        width:85%;
+        height: 75%;
+        background-color: #E8E8E8;
+        margin-right: 20px;
+        /*table-layout: fixed;*/
+      }
+      
+      .sched_row{
+        width:100%;
+      }
+      .drop-row{
+        height: 200px;
+      }
+      .req{
+        color:white;
+      }
+      .event{
+        padding-top: 0px;
+        padding-bottom: 2px;
+        width:100%;
+        margin-right: 1px;
+        background-color: #61C2A2;
+      }       
+      }
+      body{
+        font-family: 'Arvo';
+      }
