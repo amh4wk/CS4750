@@ -2,6 +2,7 @@
 <html>
 <head>
   <link rel="stylesheet" type="text/css" href="schedule2.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
 
@@ -19,51 +20,66 @@
       </div>
     </div>
     <div class="navigation">
-      <form action="schedule_action.php" method="post" id="form">
+      <form action="schedule_export.php" method="post" id="form">
       <div class="wrapper2">
 
         <div class="abilan">
           <img src="https://i.ibb.co/5GRg92W/fullsizeoutput-2fc7.jpg" />
         </div>
 
-        <button class="school-req">CLAS Requirements</button>
-        
-        <div class="folder-icons">
-          <input type="checkbox" name="req"> Foreign Language Requirement<br>
-        </div>
-
-        <div class="folder-icons">
-          <input type="checkbox" name="req"> First Writing Requirement<br>
-        </div>
-
-        <div class="folder-icons">
-          <input type="checkbox" name="req"> Second Writing Requirement<br>
-        </div>
-
-        <div class="folder-icons">
-          <input type="checkbox" name="req"> Social Sciences<br>
-        </div>
-
-        <div class="folder-icons">
-          <input type="checkbox" name="req"> Humanities<br>
-        </div>
-
-        <div class="folder-icons">
-          <input type="checkbox" name="req"> Historical Studies<br>
-        </div>
-
-        <div class="folder-icons">
-          <input type="checkbox" name="req"> Non-Western Perspective<br>
-        </div>
-
-        <div class="folder-icons">
-          <input type="checkbox" name="req"> Natural Science and Mathematics<br>
-        </div>
-
-        <button class="school-req" style="margin-top:10px;">Major Requirements</button>
+        <button class="school-req">School Requirements</button>
         <?php
           session_start();
           $username = $_SESSION['email'];
+
+          $con = new mysqli("cs4750.cs.virginia.edu", "amh4wk", "123456", "amh4wk_project");
+          $username = $_SESSION['email'];
+          //echo $username;
+          $query = "SELECT college_name, student_id FROM student WHERE computing_id = '$username'";
+          $result = mysqli_query($con, $query);
+
+          while($row=mysqli_fetch_array($result)){
+            $college = $row['college_name'];
+            $student_id = $row['student_id'];
+          }
+
+
+          $checkboxes=array();
+          $college_query = "SELECT college_id FROM student LEFT JOIN college USING(college_name) WHERE computing_id='$username'";
+          $college_result = mysqli_query($con, $college_query);
+
+          while ($row = $college_result->fetch_assoc()){
+            $college_id = $row['college_id'];
+          }
+          //Retrieve list of requirements for users' college
+          $retrieve_req_query = "SELECT requirement, school_requirement_id FROM school_requirements WHERE college_id = $college_id";
+          $req_result = mysqli_query($con, $retrieve_req_query);
+          $counter = 1;
+          $checkboxes[0] = "<br><br>";
+          while ($row = $req_result->fetch_assoc()){
+            $school_requirement_id = $row['school_requirement_id'];
+
+            $check_query = "SELECT checked FROM `school_check_table` WHERE school_requirement_id=".$school_requirement_id." AND student_id=".$student_id;
+            $check_result = mysqli_query($con, $check_query);
+            $result = mysqli_fetch_assoc($check_result);
+            $checked = $result['checked'];
+            if($checked ==1){
+              $checkboxes[$counter] = "<input type='checkbox' checked value='".$row['requirement']."' id='".$row['requirement']."' name='reqs[]'>".$row['requirement']."<br>";
+            }
+            else{
+              $checkboxes[$counter] = "<input type='checkbox' value='".$row['requirement']."' id='".$row['requirement']."' name='reqs[]'>".$row['requirement']."<br>";
+            }
+            
+            $counter++;
+          }
+          echo implode($checkboxes);
+        ?>
+
+
+
+        <button class="school-req" style="margin-top:10px;">Major Requirements</button>
+        <?php
+          //session_start();
 
           //$school = $_SESSION['school'];
           //$major = $_SESSION['major'];
@@ -72,11 +88,14 @@
 
           $con = new mysqli("cs4750.cs.virginia.edu", "amh4wk", "123456", "amh4wk_project");
           $username = $_SESSION['email'];
-          $query = "SELECT * FROM student WHERE computing_id = '$username'";
+
+          $query = "SELECT dept_name, student_id FROM student WHERE computing_id = '$username'";
           $result = mysqli_query($con, $query);
 
           while($row=mysqli_fetch_array($result)){
             $major = $row['dept_name'];
+            $student_id = $row['student_id'];
+ 
           }
 
           $checkboxes=array();
@@ -96,23 +115,23 @@
 
             $major_requirement_id = $row['major_requirement_id'];
             //check to see if the checkbox is checked
-            $check_query = "SELECT checked FROM `major_check_table` WHERE major_requirement_id=".$major_requirement_id;
+            $check_query = "SELECT checked FROM `major_check_table` WHERE major_requirement_id=".$major_requirement_id." AND student_id=".$student_id;
             $check_result = mysqli_query($con, $check_query);
             $result = mysqli_fetch_assoc($check_result);
             $checked = $result['checked'];
             if($checked == 1){
-              $checkboxes[$counter] = "<input type='checkbox' value='". $row['requirement'] ."' name='reqs[]' checked>".$row['requirement']."<br>";
+              $checkboxes[$counter] = "<input type='checkbox' value='". $row['requirement'] ."' id ='".$row['requirement']."' name='reqs[]' checked>".$row['requirement']."<br>";
             }
             else{
-              $checkboxes[$counter] = "<input type='checkbox' value='". $row['requirement'] ."' name='reqs[]'>".$row['requirement']."<br>";
+              $checkboxes[$counter] = "<input type='checkbox' value='". $row['requirement'] ."' id ='".$row['requirement']."' name='reqs[]'>".$row['requirement']."<br>";
             }
             $counter++;
           }
           echo implode($checkboxes);
 
         ?>
-
-        <input class="submit" type="submit" value="submit"/>
+        <input type="submit" class="submit" value="Export" style="margin-top:100px; float: right;"></input>
+        
       </div>
     </div>
   </form>
@@ -133,7 +152,13 @@
         </div>
         <div class="profile2">
           <img src="https://www.seekclipart.com/clipng/middle/103-1032140_graphic-transparent-1-vector-flat-small-user-icon.png" />
-          <div class="icon-name5">Larry Nunez</div>
+          <?php
+
+            echo "<div class='icon-name5'>".$_SESSION['name']."</div>";
+          ?>
+          <div> 
+            <a class="icon-name5" href="login.php" style="margin-left: 10px;">Log out</a>
+          </div>
         </div>
       </div>
       <hr class="new-hr">
@@ -144,7 +169,31 @@
         <div class="middle-buttons" style="margin: auto;">
 
           <div class="form has-search">
-            <input class="text" type="search" placeholder="Search here..." name="search" id="courseID">
+            <input list="courses" name="courses" placeholder="Search here..." id="courseID" style="padding-left:30px; margin-left: 45px; margin-right: 20px;background-color: #edeef5;height: 30px;width: 280px;border-radius: 4px;">
+
+            <datalist id="courses">
+              <!-- course table search -->
+              <?php
+                $con = new mysqli("cs4750.cs.virginia.edu", "amh4wk", "123456", "amh4wk_project");
+                $result = mysqli_query($con, "SELECT `dept_name`, `numeric` FROM `course`");
+                $counter = 0;
+                $course_list = array();
+                while($row=mysqli_fetch_array($result)){
+                  $dept_name = $row['dept_name'];
+                  $numeric = $row['numeric']; 
+
+                  $course = $dept_name.$numeric;
+                  //echo $course;
+                  $course_list[$counter] = "<option value = ".$course.">";
+                  $counter = $counter+1;
+
+
+                }
+                
+                echo implode($course_list);
+              ?>
+
+            </datalist>
             <span class="searchIcon">
               <img src="https://i.ibb.co/sqFgRq8/search.png" />
             </span>
@@ -210,15 +259,32 @@
 </body>
   <script>
 
-  $("input[type='checkbox']").on('click', function(){
+  $(document).ready(function(){
+    $("input:checkbox").on("change", function(){
+      
+      var $reqs = $(this).attr('id');
+      // var val = $(this).is(':checked') ? 1:0;
+      $.ajax({
+        type : "POST",
+        url : "https://cs4750.cs.virginia.edu/~amh4wk/project/schedule_action.php",
+        data : { reqs : $reqs },
+        success : function(result){
 
-    var checked = $(this).attr('checked');
-    if(checked){
-      var value = $(this).val();
+          //$('#result').html(response);
+          console.log(result);
+        },
+        error : function(result){
+          window.alert("failure");
 
-    }
+        },
 
-  })
+
+      });
+      
+
+    });
+  });
+
 
   function drop(ev, el){
     ev.preventDefault();
