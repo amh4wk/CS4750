@@ -7,15 +7,8 @@
 <html>
 <head>
 	<title>Login Page</title>
-
-   
-	<!--Bootsrap 4 CDN-->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    
-    <!--Fontawesome CDN-->
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-
-	<!--Custom styles-->
 	<link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
@@ -32,21 +25,27 @@
 			$db = DbUtil::loginConnection();
 			$stmt = $db->stmt_init();
 			
-			$sql = "select * from student where computing_id = ?";
+			$sql = "select * from student where computing_id = ? AND password = ?";
 			
 			if($stmt->prepare($sql) or die(mysqli_error($db))) {
 				$searchString = '"'. $_GET['username'] . '"';
-				$stmt->bind_param("s", $_GET['username']);
+				$stmt->bind_param("ss", $_GET['username'], $_GET['password']);
 				$stmt->execute();
 				$stmt->store_result();
 				$stmt->bind_result($student_id, $computing_id, $college_name, $dept_name, $first_name, $last_name, $password);
-				
-				while($stmt->fetch()) {
-					$_SESSION['email'] = $computing_id;
-					$_SESSION['password'] = $password;
+
+				if ($stmt->num_rows == 0){
+					echo "<script type='text/javascript'>alert('Account does not exist or password does not match email, please try again');</script>";
+				}
+				else{
+					while($stmt->fetch()) {
+						$_SESSION['email'] = $computing_id;
+						$_SESSION['password'] = $password;
+						$_SESSION['name'] = $first_name." ".$last_name;
+					}
+					header('Location: schedule.php');
 				}
 				
-				header('Location: schedule.php');
 			}
 		}
 
@@ -70,7 +69,7 @@
 							<div class="input-group-prepend">
 								<span class="input-group-text"><i class="fas fa-user"></i></span>
 							</div>
-							<input type="text" name="username" class="form-control" placeholder="username">
+							<input type="text" name="username" class="form-control" placeholder="Computing ID">
 							
 						</div>
 
@@ -91,11 +90,11 @@
 				</div>
 				<div class="card-footer">
 					<div class="d-flex justify-content-center links">
-						Don't have an account?<a href="http://192.168.64.2/createpage.php">Sign Up</a>
+						Don't have an account?<a href="https://cs4750.cs.virginia.edu/~amh4wk/project/createpage.php">Sign Up</a>
 					</div>
-					<div class="d-flex justify-content-center">
+					<!-- <div class="d-flex justify-content-center">
 						<a href="#">Forgot your password?</a>
-					</div>
+					</div> -->
 				</div>
 			</div>
 		</div>
